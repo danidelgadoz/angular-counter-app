@@ -1,5 +1,9 @@
-<app-navbar></app-navbar>
+<app-navbar [counters]="counters"></app-navbar>
 
 <main class="container">
-  <app-counters></app-counters>
+  <app-counters [counters]="counters"
+                (onReset)="handleReset($event)"
+                (onDelete)="handleDelete($event)"
+                (onIncrement)="handleIncrement($event)">
+  </app-counters>
 </main>
