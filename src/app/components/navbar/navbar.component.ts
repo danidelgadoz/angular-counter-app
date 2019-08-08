@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { StoreService } from '../../store.service';
 
 @Component({
   selector: 'app-navbar',
@@ -6,13 +7,9 @@ import { Component, OnInit, Input } from '@angular/core';
   styles: []
 })
 export class NavbarComponent implements OnInit {
-  totalCounters;
+  totalCounters: number;
 
-  @Input() set counters(value) {
-    this.totalCounters = value.filter(c => c.value > 0).length;
-  };
-
-  constructor() {
+  constructor(private storeService: StoreService) {
     console.log('%c Navbar - constructor', 'background: #222; color: pink');
   }
 
@@ -24,6 +21,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     console.log('%c Navbar - ngOnInit', 'background: #222; color: pink');
     // debugger;
+
+    this.loadTotalCounters();
   }
 
   ngOnDestroy() {
@@ -50,6 +49,14 @@ export class NavbarComponent implements OnInit {
   ngAfterViewChecked() {
     console.log('%c Navbar - ngAfterViewChecked', 'background: #222; color: pink');
     // debugger;
+  }
+
+  private loadTotalCounters() {
+    this.totalCounters = this.storeService.counters.filter(c => c.value > 0).length;
+
+    this.storeService.countersSubject.subscribe(counters => {
+      this.totalCounters = counters.filter(c => c.value > 0).length;
+    });
   }
 
 }

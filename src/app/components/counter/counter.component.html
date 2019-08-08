@@ -1,11 +1,11 @@
 <div>
   <span class="{{getBadgeClasses()}}">{{ formatCount() }}</span>
   <button class="btn btn-secondary btn-sm"
-          (click)="onIncrement.emit(counter)">
+          (click)="onIncrement(counter)">
     Increment
   </button>
   <button class="btn btn-danger btn-sm m2"
-          (click)="onDelete.emit(counter.id)">
+          (click)="onDelete(counter.id)">
     Delete
   </button>
 </div>

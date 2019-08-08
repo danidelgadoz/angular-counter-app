@@ -1,8 +1,6 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   OnInit,
   OnChanges,
   OnDestroy,
@@ -11,6 +9,8 @@ import {
   AfterViewInit,
   AfterViewChecked
 } from '@angular/core';
+import { StoreService } from '../../store.service';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-counter',
@@ -26,22 +26,23 @@ export class CounterComponent implements
   AfterViewInit,
   AfterViewChecked {
 
-  @Input() counter: any;
-  @Output() onIncrement = new EventEmitter<any>();
-  @Output() onDelete = new EventEmitter();
+  @Input() counterId: number;
+  counter: any;
 
-  constructor() {
+  constructor(private storeService: StoreService) {
     console.log('%c Counter - constructor', 'background: #222; color: #f9551a');
   }
 
-  ngOnChanges() {
-    console.log('%c Counter - ngOnChanges', 'background: #222; color: #f9551a');
+  ngOnChanges(changes) {
+    console.log('%c Counter - ngOnChanges', 'background: #222; color: #f9551a', changes);
     // debugger;
   }
 
   ngOnInit() {
     console.log('%c Counter - ngOnInit', 'background: #222; color: #f9551a');
     // debugger;
+
+    this.loadCounter();
   }
 
   ngOnDestroy() {
@@ -79,5 +80,32 @@ export class CounterComponent implements
   formatCount() {
     const { value } = this.counter;
     return value === 0 ? 'Zero' : value;
+  }
+
+  // Component functions
+  onIncrement(counter) {
+    this.storeService.handleIncrement(counter);
+  }
+
+  onDelete(id) {
+    this.storeService.handleDelete(id);
+  }
+
+  private loadCounter() {
+    this.counter = this.storeService.counters.find(c => c.id === this.counterId);
+
+    this.storeService.countersSubject
+      .pipe(
+        filter((cs) => {
+          const counterFinded = cs.find(c => c.id === this.counter.id)
+          return counterFinded ? true : false
+        }),
+        map(counters => {
+          return counters.find(c => c.id === this.counter.id)
+        })
+      )
+      .subscribe(counter => {
+        this.counter = counter;
+      });
   }
 }

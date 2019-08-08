@@ -1,8 +1,5 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   OnInit,
   OnChanges,
   OnDestroy,
@@ -11,6 +8,7 @@ import {
   AfterViewInit,
   AfterViewChecked
 } from '@angular/core';
+import { StoreService } from '../../store.service';
 
 @Component({
   selector: 'app-counters',
@@ -26,12 +24,9 @@ export class CountersComponent implements
   AfterViewInit,
   AfterViewChecked {
 
-  @Input() counters: Array<any>;
-  @Output() onIncrement = new EventEmitter();
-  @Output() onDelete = new EventEmitter();
-  @Output() onReset = new EventEmitter();
+  counters: Array<any>;
 
-  constructor() {
+  constructor(private storeService: StoreService) {
     console.log('%c Counters - constructor', 'background: #222; color: cyan');
   }
 
@@ -43,6 +38,8 @@ export class CountersComponent implements
   ngOnInit() {
     console.log('%c Counters - ngOnInit', 'background: #222; color: cyan');
     // debugger;
+
+    this.loadCounters();
   }
 
   ngOnDestroy() {
@@ -69,6 +66,23 @@ export class CountersComponent implements
   ngAfterViewChecked() {
     console.log('%c Counters - ngAfterViewChecked', 'background: #222; color: cyan');
     // debugger;
+  }
+
+  // Component functions
+
+  onReset(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.storeService.handleReset();
+  }
+
+  private loadCounters() {
+    this.counters = this.storeService.counters;
+
+    this.storeService.countersSubject
+      .subscribe(cs => {
+        this.counters = cs;
+      });
   }
 
 }
